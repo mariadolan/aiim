@@ -66,7 +66,7 @@ const Upload = () => {
       return;
     }
 
-    axios.post("https://aiim.xandervarga.me/article", article).then((res) => {
+    axios.post("/article", article).then((res) => {
       console.log(res.data);
       setSuccess("Article added successfully");
       setTimeout(() => {
