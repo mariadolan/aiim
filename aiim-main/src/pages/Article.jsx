@@ -46,7 +46,7 @@ const Article = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    axios.get(`https://aiim.xandervarga.me/article/${id}`).then((res) => {
+    axios.get(`https://aiimresearch.org/article/${id}`).then((res) => {
       console.log(res.data);
       setArticle(res.data);
     });
