@@ -12,7 +12,7 @@ const useArticles = () => {
   useEffect(() => {
     if (!articles) {
       axios
-        .get("https://aiimresearch.org/article")
+        .get("/article")
         .then((res) => useArticleStore.setState({ articles: res.data }));
     }
   }, []);
