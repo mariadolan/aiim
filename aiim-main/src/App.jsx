@@ -24,8 +24,6 @@ function App() {
           </Routes>
         </main>
         <Footer />
-        {/* Add the Analytics component to track page views */}
-        <Analytics />
       </div>
     </BrowserRouter>
   );
