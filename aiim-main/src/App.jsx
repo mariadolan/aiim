@@ -8,9 +8,6 @@ import Search from "./pages/Search";
 import Delete from "./pages/Delete";
 import Footer from "./components/Footer";
 
-// Import Analytics from Vercel
-import { Analytics } from "@vercel/analytics/react";
-
 function App() {
   return (
     <BrowserRouter>
@@ -27,8 +24,6 @@ function App() {
           </Routes>
         </main>
         <Footer />
-        {/* Add the Analytics component to track page views */}
-        <Analytics />
       </div>
     </BrowserRouter>
   );
