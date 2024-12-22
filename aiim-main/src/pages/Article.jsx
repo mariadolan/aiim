@@ -9,7 +9,7 @@ const Delete = ({ id }) => {
 
   const handleDelete = () => {
     axios
-      .delete(`https://aiimresearch.org/article/${id}`, {
+      .delete(`/article/${id}`), {
         data: { pswd },
       })
       .then((res) => {
@@ -46,7 +46,7 @@ const Article = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    axios.get(`https://aiimresearch.org/article/${id}`).then((res) => {
+    axios.get(`/article/${id}`).then((res) => {
       console.log(res.data);
       setArticle(res.data);
     });
