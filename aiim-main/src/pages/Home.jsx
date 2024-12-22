@@ -76,7 +76,7 @@ const Home = () => {
   return (
     <div className="flex flex-col space-y-5">
       <div className="px-page border-b border-gray-200" />
-      <h1 className="px-page text-2xl">Where AI meets Maria</h1>
+      <h1 className="px-page text-2xl">Where AI Meets Medicine</h1>
       <Bar />
       <div className="p-3 px-page flex flex-row space-x-5 bg-gray-300 items-center">
         <h1 className="font-bold text-2xl flex-1">About AIIM</h1>
