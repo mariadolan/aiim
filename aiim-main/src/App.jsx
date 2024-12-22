@@ -8,9 +8,6 @@ import Search from "./pages/Search";
 import Delete from "./pages/Delete";
 import Footer from "./components/Footer";
 
-// Import Analytics from Vercel
-import { Analytics } from "@vercel/analytics/react";
-
 function App() {
   return (
     <BrowserRouter>
