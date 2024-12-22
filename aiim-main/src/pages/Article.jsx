@@ -9,7 +9,7 @@ const Delete = ({ id }) => {
 
   const handleDelete = () => {
     axios
-      .delete(`https://aiim.xandervarga.me/article/${id}`, {
+      .delete(`https://aiimresearch.org/article/${id}`, {
         data: { pswd },
       })
       .then((res) => {
