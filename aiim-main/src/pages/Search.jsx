@@ -67,151 +67,164 @@ const Article = ({ article }) => {
   );
 };
 
-const AndOrBtn = ({ val, set }) => {
-  return (
-    <div className="flex">
-      <Selectable
-        selected={val}
-        className="rounded-l-lg"
-        onClick={() => set(true)}>
-        AND
-      </Selectable>
-      <Selectable
-        selected={!val}
-        className="rounded-r-lg"
-        onClick={() => set(false)}>
-        OR
-      </Selectable>
-    </div>
-  );
-};
-
 const Search = () => {
   const articles = useArticles();
   const location = useLocation();
-  const [categories, setCategories] = useState([]);
-  const [tags, setTags] = useState([]);
-  const [advanced, setAdvanced] = useState(false);
+  //categories for advanced search hardcoded
+  const [categories, setCategories] = useState([
+    "ALLERGY/IMMUNOLOGY",
+    "CARDIOLOGY",
+    "DERMATOLOGY",
+    "EMERGENCY MEDICINE",
+    "ENDOCRINOLOGY",
+    "GASTROENTEROLOGY",
+    "HEMATOLOGY/ONCOLOGY",
+    "NEUROLOGY",
+    "OBSTETRICS/GYNECOLOGY",
+    "OPHTHALMOLOGY",
+    "ORTHOPEDICS",
+    "PEDIATRICS",
+    "PUBLIC HEALTH",
+    "PRIMARY CARE",
+    "PSYCHIATRY",
+    "RADIOLOGY",
+    "SURGERY",
+    "TELEHEALTH",
+  ]);
 
+  
+  const [tags, setTags] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [exactSearch, setExactSearch] = useState("");
   const [chosenTags, setChosenTags] = useState([]);
-  const [and1, setAnd1] = useState(false);
-  const [_and2, setAnd2] = useState(true);
+  const [searchResults, setSearchResults] = useState([]);
+  const [sortOption, setSortOption] = useState("bestMatch");
 
   useEffect(() => {
     if (!articles) return;
-    const categories = articles.map((article) => article.category);
     const tags = articles.map((article) => article.tags).flat();
     setTags([...new Set(tags)]);
-    setCategories([...new Set(categories)]);
   }, [articles]);
-
-  useEffect(() => {
-    const search = new URLSearchParams(location.search).get("q");
-    setExactSearch(search);
-  }, [location.search]);
 
   if (!articles) return <Loading />;
 
-  const and2 = _and2 && exactSearch;
+  const handleSearch = () => {
+    const results = articles.filter((article) => {
+      const queryMatch = searchQuery
+        ? article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          article.summary.toLowerCase().includes(searchQuery.toLowerCase())
+        : true;
 
-  const hasInput = Boolean(
-    selectedCategories.length || exactSearch || chosenTags.length
-  );
+      const categoryMatch = selectedCategories.length
+        ? selectedCategories.includes(article.category)
+        : true;
+
+      const tagMatch = chosenTags.length
+        ? chosenTags.some((tag) => article.tags.includes(tag))
+        : true;
+
+      return queryMatch && categoryMatch && tagMatch;
+    });
+
+    setSearchResults(results);
+  };
+//sorting article options after advanced search 
+  const sortedResults = [...searchResults].sort((a, b) => {
+    if (sortOption === "mostRecent") {
+      return new Date(b.date) - new Date(a.date); // sorting articles by most recent date
+    }
+    if (sortOption === "bestMatch") {
+      // placeholder logic for "best match"
+      return b.relevanceScore - a.relevanceScore; // sorting results by best match (need to implement relevance score?)
+    }
+    return 0;
+  });
 
   return (
     <div className="flex flex-col space-y-5 pt-4">
-      <h1 className="px-page text-2xl">Search for an Article</h1>
-      <input type="checkbox" onChange={() => setAdvanced(!advanced)} />
+      <h1 className="px-page text-2xl">Advanced Search</h1>
 
-      {advanced && (
-        <>
-          <Bar />
-          <h2 className="px-page text-xl">In one of these categories:</h2>
-          <div className="px-page grid grid-cols-6 gap-4">
-            {categories.map((category) => (
-              <Category
-                key={category}
-                category={category}
-                selected={selectedCategories.includes(category)}
-                handleClick={() =>
-                  setSelectedCategories(
-                    selectedCategories.includes(category)
-                      ? selectedCategories.filter((c) => c !== category)
-                      : [...selectedCategories, category]
-                  )
-                }
-              />
-            ))}
-          </div>
-          <div className="px-page flex items-center space-x-2">
-            <AndOrBtn val={and1} set={setAnd1} />
-            <h2 className="text-xl">With one of these tags:</h2>
-          </div>
-          <div className="px-page grid grid-cols-6 gap-4">
-            {tags.map((tag) => (
-              <Tag
-                key={tag}
-                tag={tag}
-                selected={chosenTags.includes(tag)}
-                handleClick={() =>
-                  setChosenTags(
-                    chosenTags.includes(tag)
-                      ? chosenTags.filter((t) => t !== tag)
-                      : [...chosenTags, tag]
-                  )
-                }
-              />
-            ))}
-          </div>
-          <div className="flex px-page items-center space-x-2">
-            <AndOrBtn val={and2} set={setAnd2} />
-            <h2 className="text-xl">Which contain:</h2>
-          </div>
-          <Bar />
-        </>
-      )}
-      <div className="px-page w-full">
+      {/* Search Bar */}
+      <div className="px-page">
         <input
           type="text"
-          className="bg-gray-200 p-4 rounded-lg"
-          placeholder="search"
-          value={exactSearch}
-          onChange={(e) => setExactSearch(e.target.value)}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search articles..."
+          className="w-full p-3 border rounded-md"
         />
       </div>
 
-      {hasInput && (
-        <div className="px-page flex flex-col space-y-2 p-4">
-          {articles
-            .filter((article) => {
-              const categoryMatch = selectedCategories.includes(
-                article.category
-              );
-              const tagMatch = chosenTags.some((tag) =>
-                article.tags.includes(tag)
-              );
-              const exactMatch =
-                exactSearch &&
-                (article.title.includes(exactSearch) ||
-                  article.summary.includes(exactSearch) ||
-                  article.implications.includes(exactSearch));
+      {/* Category Selection */}
+      <h2 className="px-page text-xl">Select Categories:</h2>
+      <div className="px-page grid grid-cols-4 gap-4">
+        {categories.map((category) => (
+          <Category
+            key={category}
+            category={category}
+            selected={selectedCategories.includes(category)}
+            handleClick={() =>
+              setSelectedCategories(
+                selectedCategories.includes(category)
+                  ? selectedCategories.filter((c) => c !== category)
+                  : [...selectedCategories, category]
+              )
+            }
+          />
+        ))}
+      </div>
 
-              const block1 = and1
-                ? categoryMatch && tagMatch
-                : categoryMatch || tagMatch;
+      {/* Tag Selection */}
+      <h2 className="px-page text-xl">Select Tags:</h2>
+      <div className="px-page grid grid-cols-4 gap-4">
+        {tags.map((tag) => (
+          <Tag
+            key={tag}
+            tag={tag}
+            selected={chosenTags.includes(tag)}
+            handleClick={() =>
+              setChosenTags(
+                chosenTags.includes(tag)
+                  ? chosenTags.filter((t) => t !== tag)
+                  : [...chosenTags, tag]
+              )
+            }
+          />
+        ))}
+      </div>
 
-              const block2 = and2 ? block1 && exactMatch : block1 || exactMatch;
+      {/* Search Button */}
+      <div className="px-page flex justify-center">
+        <button
+          className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+          onClick={handleSearch}
+        >
+          Search
+        </button>
+      </div>
 
-              return block2;
-            })
-            .slice(0, LIMIT)
-            .map((article) => (
-              <Article key={article.id} article={article} />
-            ))}
+      {/* Sort Options */}
+      {searchResults.length > 0 && (
+        <div className="px-page flex justify-end items-center space-x-4">
+          <label htmlFor="sort" className="text-xl">Sort by:</label>
+          <select
+            id="sort"
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+            className="p-2 border rounded-md"
+          >
+            <option value="bestMatch">Best Match</option>
+            <option value="mostRecent">Most Recent</option>
+          </select>
         </div>
       )}
+
+      {/* Display Search Results */}
+      <div className="px-page flex flex-col space-y-2">
+        {sortedResults.slice(0, LIMIT).map((article) => (
+          <Article key={article.id} article={article} />
+        ))}
+      </div>
     </div>
   );
 };
