@@ -66,7 +66,7 @@ const Upload = () => {
       return;
     }
 
-    axios.post("/article", article).then((res) => {
+    axios.post(`${API_BASE_URL}/article`, article).then((res) => {
       console.log(res.data);
       setSuccess("Article added successfully");
       setTimeout(() => {
