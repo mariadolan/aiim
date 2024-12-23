@@ -2,23 +2,26 @@ import express from "express";
 import mongoose from "mongoose";
 import joi from "joi";
 import cors from "cors";
-import "dotenv/config"; //theres a .env file with the MONGO_URI that im hiding bc it would like let everyone hack me
+import "dotenv/config";
 import { sha512 } from "js-sha512";
 
 const app = express();
-app.use(cors());
+
+// Configure CORS to accept requests from both your domains
+app.use(cors({
+  origin: ['https://www.aiimresearch.org', 'https://aiimresearch.org', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
+// MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("DB connected"))
   .catch((err) => console.error(err));
 
-const PORT = 3014;
-app.listen(PORT, () => console.log(`Server on ${PORT}`));
-
-
-//mongoos schema for the DB
 const Schema = mongoose.Schema;
 const articleSchema = new Schema({
   added: { type: Date, default: Date.now },
@@ -33,7 +36,6 @@ const articleSchema = new Schema({
   embedding: [Number],
 });
 
-//joi schema for double checking it before I add it to the DB
 const joiArticleSchema = joi.object({
   date: joi.date().required(),
   category: joi.string().required(),
@@ -48,7 +50,12 @@ const joiArticleSchema = joi.object({
 
 const Article = mongoose.model("Article", articleSchema);
 
-//post a new article (pswd protected)
+// Add base route for health check
+app.get("/", (req, res) => {
+  res.json({ status: "ok", message: "API is running" });
+});
+
+// Article routes
 app.post("/article", async (req, res) => {
   try {
     if (sha512(req.body.pswd) !== process.env.PSWD_HASH)
@@ -63,20 +70,30 @@ app.post("/article", async (req, res) => {
   }
 });
 
-//gets all the articles
-const LIMIT = 10;
 app.get("/article", async (req, res) => {
   try {
-    const page = req.query.page || 1;
+    const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * LIMIT;
-    const articles = await Article.find().skip(skip).limit(LIMIT);
-    res.json(articles);
+    const articles = await Article.find()
+      .sort({ date: -1 })  // Sort by newest first
+      .skip(skip)
+      .limit(LIMIT);
+    
+    const total = await Article.countDocuments();
+    
+    res.json({
+      articles,
+      pagination: {
+        current: page,
+        total: Math.ceil(total / LIMIT),
+        hasMore: skip + articles.length < total
+      }
+    });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
 
-//gets an article by ID (not used bc the current frontent just pulls all of them at once)
 app.get("/article/:id", async (req, res) => {
   try {
     const article = await Article.findById(req.params.id);
@@ -87,7 +104,6 @@ app.get("/article/:id", async (req, res) => {
   }
 });
 
-//checks pswd, if its good, deletes article by its id
 app.delete("/article/:id", async (req, res) => {
   try {
     if (sha512(req.body.pswd) !== process.env.PSWD_HASH)
@@ -100,7 +116,6 @@ app.delete("/article/:id", async (req, res) => {
   }
 });
 
-//this is not used yet. Its for semantic search if we ever need that later
 const agg = (queryVector) => [
   {
     $vectorSearch: {
@@ -128,3 +143,20 @@ const agg = (queryVector) => [
     },
   },
 ];
+
+const PORT = process.env.PORT || 3014;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// Add error handler for uncaught errors
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: "Internal server error" });
+});
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+  mongoose.connection.close(() => {
+    console.log('MongoDB connection closed.');
+    process.exit(0);
+  });
+});
