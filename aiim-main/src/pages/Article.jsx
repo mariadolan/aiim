@@ -46,7 +46,7 @@ const Article = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    axios.get(`/article/${id}`).then((res) => {
+    axios.get(`${API_BASE_URL}/article/${id}`).then((res) => {
       console.log(res.data);
       setArticle(res.data);
     });
