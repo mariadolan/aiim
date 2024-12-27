@@ -8,8 +8,7 @@ const Delete = ({ id }) => {
   const [pswd, setPswd] = useState("");
 
   const handleDelete = () => {
-    axios
-      .delete(`/article/${id}`, {
+    axios.delete(`/article/${id}`, {
         data: { pswd }
       })
       .then((res) => {
@@ -42,7 +41,6 @@ const Delete = ({ id }) => {
 const Article = () => {
   const [article, setArticle] = useState(null);
   const [showDelete, setShowDelete] = useState(false);
-
   const { id } = useParams();
 
   useEffect(() => {
@@ -66,21 +64,17 @@ const Article = () => {
         alt={article.title}
         className="w-full h-72 object-cover"
       />
-
       <div className="px-page py-4">
         <h2 className="text-2xl font-bold text-gray-800 mb-2 hover:text-blue-600 transition-colors">
           {article.title}
         </h2>
-
         <div className="flex items-center text-sm text-gray-600 mb-4">
           <time className="mr-4">{article.date}</time>
           <span className="px-2 py-1 bg-gray-100 rounded-full">
             {article.category}
           </span>
         </div>
-
         <p className="text-gray-700 mb-4">{article.implications}</p>
-
         <a
           href={article.link}
           target="_blank"
@@ -98,16 +92,13 @@ const Article = () => {
             </svg>
           </div>
         </a>
-
         <p className="text-gray-600 mb-4">{article.summary}</p>
-
         <div className="flex flex-wrap gap-2">
           {article.tags.map((tag) => (
             <TinyTag key={tag} tag={tag} />
           ))}
         </div>
       </div>
-
       <Bar className="mt-4" />
       
       <div className="px-page py-4">
