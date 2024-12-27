@@ -10,14 +10,14 @@ const Delete = ({ id }) => {
     axios
       .delete(/article/${id}), {
         data: { pswd },
-      };
+      });
       .then((res) => {
         console.log(res.data);
         window.location = "/";
-      };
+      });
       .catch((err) => {
         console.log(err);
-      };
+      });
   };
   return (
     <div className="flex items-center space-x-2">
