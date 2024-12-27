@@ -11,14 +11,14 @@ const Delete = ({ id }) => {
     axios
       .delete(`/article/${id}`), {
         data: { pswd },
-      })
+      };
       .then((res) => {
         console.log(res.data);
         window.location = "/";
-      })
+      };
       .catch((err) => {
         console.log(err);
-      });
+      };
   };
 
   return (
