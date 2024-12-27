@@ -19,7 +19,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/upload" element={<Upload />} />
             <Route path="/delete" element={<Delete />} />
-            <Route path="/advanced-search" element={<Search />} />
+            <Route path="/search" element={<Search />} />
             <Route path="/article/:id" element={<Article />} />
           </Routes>
         </main>

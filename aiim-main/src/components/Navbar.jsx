@@ -45,7 +45,7 @@ function SearchBar() {
       </Link>
       <input
         type="text"
-        placeholder="Search For Articles"
+        placeholder="Search"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         onKeyDown={handleKeyDown}
@@ -81,8 +81,8 @@ function Navbar() {
         <StyledLink to="/" element="Home">
           Home
         </StyledLink>{" "}
-        <StyledLink to="/advanced-search" element="Advanced Search">
-          Advanced Search
+        <StyledLink to="/search" element="Search">
+          Search
         </StyledLink>
         <StyledLink to="/about" element="About">
           About
@@ -96,4 +96,3 @@ function Navbar() {
 }
 
 export default Navbar;
- 
