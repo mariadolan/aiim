@@ -7,17 +7,16 @@ import Bar from "../components/Bar";
 const Delete = ({ id }) => {
   const [pswd, setPswd] = useState("");
 
-  const handleDelete = () => {
-    axios.delete(`/article/${id}`, {
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete("https://aiim.xandervarga.me/article/" + id, {
         data: { pswd }
-      })
-      .then((res) => {
-        console.log(res.data);
-        window.location = "/";
-      })
-      .catch((err) => {
-        console.log(err);
       });
+      console.log(response.data);
+      window.location = "/";
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -44,18 +43,23 @@ const Article = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    axios.get(`/article/${id}`).then((res) => {
-      console.log(res.data);
-      setArticle(res.data);
-    });
+    axios.get("https://aiim.xandervarga.me/article/" + id)
+      .then((res) => {
+        console.log(res.data);
+        setArticle(res.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }, [id]);
 
-  if (!article)
+  if (!article) {
     return (
       <div className="flex flex-col w-full justify-center items-center">
         Loading...
       </div>
     );
+  }
 
   return (
     <div className="flex flex-col w-full">
@@ -100,7 +104,6 @@ const Article = () => {
         </div>
       </div>
       <Bar className="mt-4" />
-      
       <div className="px-page py-4">
         <button onClick={() => setShowDelete(!showDelete)} className="">
           ...
