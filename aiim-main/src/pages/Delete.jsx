@@ -1,6 +1,10 @@
 import useArticles from "../hooks/useArticles";
 
 const ArticleCard = ({ article }) => {
+  const id = article.id;
+
+      axios.delete(`${BASE_URL}article/${id}`);
+
   return <div className="bg-gray-200 px-2 py-1">{article.title}</div>;
 };
 
@@ -11,3 +15,7 @@ const Delete = () => {
 };
 
 export default Delete;
+
+
+
+

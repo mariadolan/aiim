@@ -71,6 +71,7 @@ const ArticleListHoriz = ({ articles }) => {
 
 const Home = () => {
   const articles = useArticles();
+
   if (!articles) return <Loading />;
 
   return (
@@ -103,3 +104,4 @@ const Home = () => {
 };
 
 export default Home;
+

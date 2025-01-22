@@ -1,10 +1,10 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Article from './pages/Article';
 import Home from './pages/Home';
 import Submit from './pages/Submit';
-import Search from './pages/Search'; //Xander added this line
+import Search from './pages/Search';
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -57,7 +57,7 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/article/:id" element={<Article />} />
             <Route path="/submit" element={<Submit />} />
-            <Route path="/search" element={<Search />} /> {/*Xander added this line*/}
+            <Route path="/search" element={<Search />} />
           </Routes>
         </main>
       </div>
